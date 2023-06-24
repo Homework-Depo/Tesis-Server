@@ -1,4 +1,5 @@
 import express from 'express';
+import { routes } from './router';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
@@ -11,8 +12,6 @@ app.use(cors({
   origin: 'http://localhost:4200',
 }));
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
+routes(app);
 
 export default app;
