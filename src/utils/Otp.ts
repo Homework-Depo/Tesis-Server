@@ -9,7 +9,7 @@ export const generate = (secretKey: string) => {
 };
 
 export const verifyOtp = (otp: string, secret: string) => {
-  return authenticator.verify({ token: otp, secret: secret });
+  return authenticator.check(otp, secret);
 };
 
 export const generateKeyUri = (email: string, secret: string) => {
