@@ -33,25 +33,32 @@ export const login = async (req: Request, res: Response) => {
 
   const token = generateToken(payload, '5m');
 
+  res.cookie('jwt', token, {
+    httpOnly: true,
+    maxAge: 300000
+  })
+
   return res.status(200).json({
     authenticated: true,
-    message: 'Usuario autenticado correctamente.',
-    token: token,
+    message: 'Usuario autenticado correctamente.'
   });
 }
 
 export const verify2FA = async (req: Request, res: Response) => {
-  const { token, secret } = req.body;
+  const { secret } = req.body;
+  const cookie = req.cookies.jwt;
+  console.log(cookie);
+
   let payload: JwtPayload | string = '';
 
-  if (!token || !secret)
+  if (!cookie || !secret)
     return res.status(400).json({
       authenticated: false,
       message: 'Credenciales incorrectas.'
     });
 
   try {
-    payload = verifyToken(token);
+    payload = verifyToken(cookie);
   } catch (error) {
     return res.status(401).json({
       authenticated: false,
@@ -83,12 +90,13 @@ export const verify2FA = async (req: Request, res: Response) => {
     });
   }
 
-  /* const otpSecret = generate(user.secretKey); */
+  const otpSecret = generate(user.secretKey);
 
   if (!verifyOtp(secret, user.secretKey)) {
     return res.status(401).json({
       authenticated: false,
       message: 'Otp inválido.',
+      otpSecret: otpSecret
     });
   }
 
@@ -98,17 +106,22 @@ export const verify2FA = async (req: Request, res: Response) => {
 
   const newToken = generateToken(newPayload, '1d');
 
+  res.cookie('jwt', newToken, {
+    httpOnly: true,
+    maxAge: 604800000
+  });
+
   return res.status(200).json({
     authenticated: true,
-    token: newToken
+    otpSecret: otpSecret
   });
 }
 
 export const verifyJwt = async (req: Request, res: Response) => {
-  const { token } = req.body;
+  const cookie = req.cookies.jwt;
   let payload: JwtPayload | string = '';
 
-  if (!token) {
+  if (!cookie) {
     return res.status(400).json({
       authenticated: false,
       message: 'Token inválido.'
@@ -116,7 +129,7 @@ export const verifyJwt = async (req: Request, res: Response) => {
   }
 
   try {
-    payload = verifyToken(token);
+    payload = verifyToken(cookie);
   }
   catch (error) {
     return res.status(401).json({
@@ -137,61 +150,3 @@ export const verifyJwt = async (req: Request, res: Response) => {
     message: 'Token válido.'
   });
 }
-
-/* export const generate2FA = async (req: Request, res: Response) => {
-  const { token } = req.body;
-  let payload: JwtPayload | string = '';
-
-  if (!token)
-    return res.status(400).json({
-      authenticated: false,
-      message: 'Credenciales incorrectas.'
-    });
-
-  try {
-    payload = verifyToken(token);
-  } catch (error) {
-    return res.status(401).json({
-      authenticated: false,
-      message: 'Token inválido.'
-    });
-  }
-
-  if (typeof payload === 'string') {
-    return res.status(401).json({
-      authenticated: false,
-      message: 'Payload inválido.'
-    });
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      id: Number(payload.id)
-    }
-  });
-
-  if (!user) {
-    return res.status(401).json({
-      authenticated: false,
-      message: 'Usuario no encontrado.'
-    });
-
-  }
-
-  const secret = generateSecret();
-
-  const otpSecret = generate(secret);
-
-  const keyUri = generateKeyUri(user.email, secret);
-
-  const options: qrcode.QRCodeOptions = {
-    errorCorrectionLevel: 'H'
-  }
-
-  res.status(200).json({
-    authenticated: true,
-    secret: secret,
-    otpSecret: otpSecret,
-    keyUri: keyUri
-  });
-} */
