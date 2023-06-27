@@ -14,7 +14,6 @@ const validateToken = (req: Request, res: Response, next: NextFunction) => {
 
     next();
   } catch (error) {
-    console.log(error);
     return res.status(402).json({ message: "Unauthorized" });
   }
 }
