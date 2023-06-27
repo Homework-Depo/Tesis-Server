@@ -5,7 +5,7 @@ import validateToken from "../../middleware/validateToken";
 const router = Router();
 
 router.post("/", validateToken, Controller.main);
-/* router.post("/generate2fa", Controller.generate2fa); */
-router.post("/verify2fa", Controller.verify2fa);
+router.post("/enable2fa", validateToken, Controller.enable2fa);
+router.post("/disable2fa", validateToken, Controller.disable2fa);
 
 export default router;
