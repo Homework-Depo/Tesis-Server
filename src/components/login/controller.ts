@@ -31,23 +31,38 @@ export const login = async (req: Request, res: Response) => {
     id: user.id,
   };
 
-  const token = generateToken(payload, '5m');
+  if (user.secretKey) {
+    const token = generateToken(payload, '5m');
 
-  res.cookie('jwt', token, {
-    httpOnly: true,
-    maxAge: 300000
-  })
+    res.cookie('jwt', token, {
+      httpOnly: true,
+      maxAge: 300000
+    })
 
-  return res.status(200).json({
-    authenticated: true,
-    message: 'Usuario autenticado correctamente.'
-  });
+    return res.status(200).json({
+      authenticated: true,
+      is2faEnabled: true,
+      message: 'Usuario autenticado correctamente.'
+    });
+  } else {
+    const token = generateToken(payload, '7d');
+
+    res.cookie('jwt', token, {
+      httpOnly: true,
+      maxAge: 604800000
+    })
+
+    return res.status(200).json({
+      authenticated: true,
+      is2faEnabled: false,
+      message: 'Usuario autenticado correctamente.'
+    });
+  }
 }
 
 export const verify2FA = async (req: Request, res: Response) => {
   const { secret } = req.body;
   const cookie = req.cookies.jwt;
-  console.log(cookie);
 
   let payload: JwtPayload | string = '';
 
