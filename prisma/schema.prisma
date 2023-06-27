@@ -9,3 +9,82 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        Int        @id @default(autoincrement())
+  name      String
+  email     String     @unique
+  password  String
+  role      Role       @default(USER)
+  secretKey String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  documents Document[]
+  matters   Matter[]   @relation("MatterUser")
+}
+
+model Client {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  matters   Matter[]
+}
+
+model Matter {
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String?
+  clientId    Int
+  client      Client     @relation(fields: [clientId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  files       File[]
+  documents   Document[]
+  users       User[]     @relation("MatterUser")
+}
+
+model File {
+  id        Int      @id @default(autoincrement())
+  name      String
+  path      String
+  matterId  Int
+  matter    Matter   @relation(fields: [matterId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Document {
+  id          Int               @id @default(autoincrement())
+  title       String
+  description String?
+  content     String
+  createdBy   User              @relation(fields: [createdById], references: [id])
+  createdById Int
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  tags        Tag[]
+  matterId    Int?
+  matter      Matter?           @relation(fields: [matterId], references: [id])
+  versions    DocumentVersion[]
+}
+
+model DocumentVersion {
+  id         Int      @id @default(autoincrement())
+  documentId Int
+  document   Document @relation(fields: [documentId], references: [id])
+  content    String
+  createdAt  DateTime @default(now())
+}
+
+model Tag {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  documents Document[]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
