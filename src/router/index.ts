@@ -1,10 +1,16 @@
 import { Express, Router } from "express";
-import { LoginRouter, LogoutRouter, SettingsRouter } from "../components";
+import {
+  LoginRouter,
+  LogoutRouter,
+  SettingsRouter,
+  ClientsRouter
+} from "../components";
 
 const routesList: [string, Router][] = [
   ["/login", LoginRouter],
   ["/settings", SettingsRouter],
-  ["/logout", LogoutRouter]
+  ["/logout", LogoutRouter],
+  ["/clients", ClientsRouter]
 ];
 
 export const routes = (app: Express) => {

@@ -13,22 +13,28 @@ datasource db {
 model User {
   id        Int        @id @default(autoincrement())
   name      String
+  lastName  String
   email     String     @unique
   password  String
   role      Role       @default(USER)
   secretKey String?
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  documents Document[]
-  matters   Matter[]   @relation("MatterUser")
+  clients   Client[]
+  matters   Matter[]
+  Document  Document[]
 }
 
 model Client {
   id        Int      @id @default(autoincrement())
   name      String
+  lastName  String
+  dni       String
+  phone     String
   email     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  users     User[]
   matters   Matter[]
 }
 
@@ -38,11 +44,12 @@ model Matter {
   description String?
   clientId    Int
   client      Client     @relation(fields: [clientId], references: [id])
+  branch      String
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   files       File[]
   documents   Document[]
-  users       User[]     @relation("MatterUser")
+  users       User[]
 }
 
 model File {
