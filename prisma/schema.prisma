@@ -29,6 +29,7 @@ model Client {
   id        Int      @id @default(autoincrement())
   name      String
   lastName  String
+  status    Boolean  @default(true)
   dni       String
   phone     String
   email     String?

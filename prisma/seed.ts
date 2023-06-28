@@ -9,9 +9,25 @@ async function main() {
       password: "123456",
       secretKey: "TqfvPwUMbitCUmi"
     }
-  })
+  });
+
+  const client = await prisma.client.create({
+    data: {
+      name: "Enrique Augusto",
+      lastName: "Ramos Castilla",
+      email: "enrique.ramos@gmail.com",
+      dni: "75699829",
+      phone: "951123269",
+      users: {
+        connect: {
+          id: user.id
+        }
+      }
+    }
+  });
 
   console.log({ user })
+  console.log({ client })
 }
 main()
   .then(async () => {
