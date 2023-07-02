@@ -5,13 +5,14 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 
 const app = express();
+const frontendUrl = process.env.FRONTEND_URL;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser())
 app.use(morgan('dev'));
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: `${frontendUrl}`,
   credentials: true
 }));
 
