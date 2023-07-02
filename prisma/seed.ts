@@ -1,12 +1,17 @@
 import { PrismaClient } from '@prisma/client'
+import { genSalt, hash } from 'bcrypt';
+
 const prisma = new PrismaClient()
 async function main() {
+
+  const salt = await genSalt(10);
+
   const user = await prisma.user.create({
     data: {
       name: 'Javier Pablo',
       lastName: 'Aponte Cáceres',
       email: "javier.aponte@estudioaponte.com",
-      password: "123456",
+      password: await hash("123456", salt),
     }
   });
 
@@ -15,7 +20,7 @@ async function main() {
       name: "Alfonso Constantino",
       lastName: "Spínola Ramos",
       email: "alfonso.spinola@estudioaponte.com",
-      password: "123456"
+      password: await hash("123456", salt)
     }
   });
 
