@@ -3,14 +3,18 @@ import {
   LoginRouter,
   LogoutRouter,
   SettingsRouter,
-  ClientsRouter
+  ClientsRouter,
+  SessionRouter,
+  AuthCodeRouter
 } from "../components";
 
 const routesList: [string, Router][] = [
   ["/login", LoginRouter],
   ["/settings", SettingsRouter],
   ["/logout", LogoutRouter],
-  ["/clients", ClientsRouter]
+  ["/clients", ClientsRouter],
+  ["/session", SessionRouter],
+  ["/authCode", AuthCodeRouter]
 ];
 
 export const routes = (app: Express) => {
