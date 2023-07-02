@@ -1,11 +1,11 @@
 import { Router } from "express";
 import * as Controller from "./controller";
-import validateToken from "../../middleware/validateToken";
+import { validateAccessToken } from "../../middleware/validateToken";
 
 const router = Router();
 
-router.post("/", validateToken, Controller.main);
-router.post("/enable2fa", validateToken, Controller.enable2fa);
-router.post("/disable2fa", validateToken, Controller.disable2fa);
+router.post("/", validateAccessToken, Controller.main);
+router.post("/enable2fa", validateAccessToken, Controller.enable2fa);
+router.post("/disable2fa", validateAccessToken, Controller.disable2fa);
 
 export default router;

@@ -1,10 +1,10 @@
 import { Router } from "express";
 import * as Controller from "./controller";
-import validateToken from "../../middleware/validateToken";
+import { validateAccessToken } from "../../middleware/validateToken";
 
 const router = Router();
 
-router.get("/", validateToken, Controller.findAllClients);
-router.post("/create", validateToken, Controller.create);
+router.get("/", validateAccessToken, Controller.findAllClients);
+router.post("/create", validateAccessToken, Controller.create);
 
 export default router;

@@ -1,9 +1,9 @@
 import { Router } from "express";
-import validateToken from "../../middleware/validateToken";
+import { validateAccessToken } from "../../middleware/validateToken";
 import * as Controller from "./controller";
 
 const router = Router();
 
-router.post("/", Controller.logout);
+router.post("/", validateAccessToken, Controller.logout);
 
 export default router;
