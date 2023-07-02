@@ -26,13 +26,13 @@ export const main = async (req: Request, res: Response) => {
     }
 
     if (user.secretKey) {
-      return res.status(200).json({ is2faEnabled: true });
+      return res.status(200).json({ is2FAEnabled: true });
     }
 
     const otpSecretKey = generateSecret();
     const otpKeyUri = generateKeyUri(user.email, otpSecretKey);
 
-    return res.status(200).json({ is2faEnabled: false, otpKeyUri, otpSecretKey });
+    return res.status(200).json({ is2FAEnabled: false, otpKeyUri, otpSecretKey });
   } catch (error) {
     return res.status(500).json({ message: "Error del servidor." });
   }
