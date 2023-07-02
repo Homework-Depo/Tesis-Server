@@ -15,6 +15,7 @@ export const main = async (req: Request, res: Response) => {
         id: id
       },
       select: {
+        name: true,
         secretKey: true,
         email: true
       }
@@ -43,7 +44,7 @@ export const enable2fa = async (req: Request, res: Response) => {
   const otpSecretKey = req.body.otpSecretKey;
 
   console.log(id, authCode, otpSecretKey);
-  
+
 
   if (!id || !authCode) {
     return res.status(400).json({ message: "Id o código de autenticación inválido." });

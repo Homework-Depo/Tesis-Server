@@ -40,8 +40,8 @@ export const login = async (req: Request, res: Response) => {
     })
 
     return res.status(200).json({
-      authenticated: true,
-      is2faEnabled: true,
+      success: true,
+      authCodeRequired: true,
       message: 'Usuario autenticado correctamente.'
     });
   } else {
@@ -53,8 +53,8 @@ export const login = async (req: Request, res: Response) => {
     })
 
     return res.status(200).json({
-      authenticated: true,
-      is2faEnabled: false,
+      success: true,
+      authCodeRequired: false,
       message: 'Usuario autenticado correctamente.'
     });
   }
@@ -76,6 +76,7 @@ export const verify2FA = async (req: Request, res: Response) => {
     payload = verifyToken(cookie);
   } catch (error) {
     return res.status(401).json({
+      success: false,
       authenticated: false,
       message: 'Token inválido.'
     });
@@ -83,6 +84,7 @@ export const verify2FA = async (req: Request, res: Response) => {
 
   if (typeof payload === 'string') {
     return res.status(401).json({
+      success: false,
       authenticated: false,
       message: 'Payload inválido.'
     });
@@ -100,6 +102,7 @@ export const verify2FA = async (req: Request, res: Response) => {
 
   if (!user || !user.secretKey) {
     return res.status(401).json({
+      susccess: false,
       authenticated: false,
       message: 'Usuario no encontrado.'
     });
@@ -109,6 +112,7 @@ export const verify2FA = async (req: Request, res: Response) => {
 
   if (!verifyOtp(secret, user.secretKey)) {
     return res.status(401).json({
+      susccess: false,
       authenticated: false,
       message: 'Otp inválido.',
       otpSecret: otpSecret
@@ -127,6 +131,7 @@ export const verify2FA = async (req: Request, res: Response) => {
   });
 
   return res.status(200).json({
+    success: true,
     authenticated: true,
     otpSecret: otpSecret
   });
