@@ -40,13 +40,15 @@ model Case {
   id           Int            @id @default(autoincrement())
   title        String
   description  String?
+  status       Boolean        @default(true)
   client       Client         @relation(fields: [clientId], references: [id])
   clientId     Int
   courtFile    CourtFile?
   officeBranch OfficeBranch[]
   lawBranch    LawBranch      @relation(fields: [lawBranchId], references: [id])
   lawBranchId  Int
-  lawMatter    LawMatter[]
+  lawMatter    LawMatter      @relation(fields: [lawMatterId], references: [id])
+  lawMatterId  Int
   files        File[]
   documents    Document[]
   users        User[]
@@ -58,7 +60,7 @@ model Case {
 model CourtFile {
   id        Int      @id @default(autoincrement())
   code      String
-  court    String
+  court     String
   officer   String
   judge     String
   case      Case     @relation(fields: [caseId], references: [id])
