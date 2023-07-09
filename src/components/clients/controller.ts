@@ -119,7 +119,16 @@ export const findOneClient = async (req: Request, res: Response) => {
         lastName: true,
         dni: true,
         phone: true,
-        email: true
+        email: true,
+        cases: {
+          where: {
+            users: {
+              some: {
+                id: Number(userId)
+              }
+            }
+          }
+        }
       }
     });
 
@@ -129,18 +138,7 @@ export const findOneClient = async (req: Request, res: Response) => {
         message: "Cliente no encontrado"
       });
     }
-
-    /* const userExists = client.users.some((user) => user.id === userId); */
-
-    /* if (!userExists) {
-      return res.status(401).json({
-        success: false,
-        message: "No tienes permisos para ver este cliente."
-      });
-    }
-
-    const { users, ...clientWithoutUsers } = client; */
-
+    
     return res.status(200).json({
       success: true,
       data: client
