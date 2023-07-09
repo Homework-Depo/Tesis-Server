@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
-import { Case, Client } from "@prisma/client";
+import { Case, Client, File } from "@prisma/client";
 import prisma from '../../utils/Database';
+import { uploadFile, deleteFile } from "../../utils/AWS";
+import { PutObjectCommandOutput } from '@aws-sdk/client-s3';
+import path from 'path';
 
 export const findClient = async (req: Request, res: Response) => {
   const { clientId } = req.query;
@@ -289,3 +292,76 @@ export const findCase = async (req: Request, res: Response) => {
     });
   }
 }
+
+export const uploadFiles = async (req: Request, res: Response) => {
+  const { id } = req.body;
+  const caseId = req.params.id;
+
+  const files = req.files as Express.Multer.File[];
+  const newFiles: File[] = [];
+
+  if (!files || !id || !caseId) {
+    return res.status(400).json({
+      success: false,
+      message: "Datos incompletos."
+    });
+  }
+
+  try {
+    const caseFound = await prisma.case.findFirst({
+      where: {
+        id: Number(caseId),
+        users: {
+          some: {
+            id: Number(id)
+          }
+        }
+      }
+    });
+
+    !caseFound && res.status(404).json({
+      success: false,
+      message: "Caso no encontrado."
+    });
+
+    for (const file of files) {
+      const ext = path.extname(file.originalname);
+      const uniqueName = `${caseFound?.id}-${caseFound?.clientId}-file-${Date.now()}${ext}`;
+
+      const newFile = {
+        name: file.originalname,
+        extension: file.mimetype,
+        path: `${process.env.bucket}/${uniqueName}`,
+        size: file.size
+      };
+
+      newFiles.push(newFile as File);
+
+      const response: PutObjectCommandOutput = await uploadFile(file.buffer, uniqueName, file.mimetype);
+      if (!response.$metadata.httpStatusCode || response.$metadata.httpStatusCode !== 200) {
+        throw new Error();
+      }
+    };
+
+    await prisma.case.update({
+      where: {
+        id: Number(caseId)
+      },
+      data: {
+        files: {
+          create: newFiles
+        }
+      }
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Archivos subidos correctamente"
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error interno del servidor."
+    });
+  }
+};

@@ -6,7 +6,8 @@ import {
   ClientsRouter,
   SessionRouter,
   AuthCodeRouter,
-  CasesRouter
+  CasesRouter,
+  FilesRouter
 } from "../components";
 
 const routesList: [string, Router][] = [
@@ -16,7 +17,8 @@ const routesList: [string, Router][] = [
   ["/clients", ClientsRouter],
   ["/session", SessionRouter],
   ["/authCode", AuthCodeRouter],
-  ["/cases", CasesRouter]
+  ["/cases", CasesRouter],
+  ["/files", FilesRouter]
 ];
 
 export const routes = (app: Express) => {

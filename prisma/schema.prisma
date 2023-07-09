@@ -99,7 +99,10 @@ model OfficeBranch {
 model File {
   id        Int      @id @default(autoincrement())
   name      String
+  extension String
+  // who are you? 
   path      String
+  size      Int
   case      Case     @relation(fields: [caseId], references: [id])
   caseId    Int
   createdAt DateTime @default(now())
