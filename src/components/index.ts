@@ -6,3 +6,4 @@ export { default as SessionRouter } from "./session/network";
 export { default as AuthCodeRouter } from "./authCode/network";
 export { default as CasesRouter } from "./cases/network";
 export { default as FilesRouter } from "./files/network";
+export { default as MainRouter } from "./main/network";

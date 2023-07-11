@@ -101,9 +101,10 @@ model File {
   name      String
   key       String
   extension String
-  // who are you? 
+  favorite  Boolean  @default(false)
   path      String
   size      Int
+  signedUrl String?
   case      Case     @relation(fields: [caseId], references: [id])
   caseId    Int
   createdAt DateTime @default(now())

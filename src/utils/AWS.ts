@@ -1,4 +1,5 @@
-import { S3, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { S3, PutObjectCommand, DeleteObjectCommand, GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const s3 = new S3({
   region: process.env.region,
@@ -14,7 +15,7 @@ export const uploadFile = async (fileBuffer: any, fileOriginalName: string, mime
     Key: `${fileOriginalName}`,
     Body: fileBuffer,
     ContentType: mimeType,
-    ContentDisposition: 'inline'
+    ContentDisposition: `attachment; filename=${fileOriginalName}`
   });
 
   try {
@@ -48,6 +49,22 @@ export const findFile = async (imgS3Key: string) => {
   try {
     const response = await s3.send(params);
     return response;
+  } catch (error: any) {
+    return error.message;
+  };
+}
+
+export const generateSignedUrl = async (imgS3Key: string) => {
+  const params = {
+    Bucket: process.env.bucket,
+    Key: imgS3Key,
+    Expires: 3600,
+
+  };
+
+  try {
+    const url = await getSignedUrl(s3, new GetObjectCommand(params));
+    return url;
   } catch (error: any) {
     return error.message;
   };
