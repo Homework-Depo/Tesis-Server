@@ -9,6 +9,8 @@ router.get("/create", validateAccessToken, Controller.findClient);
 router.post("/create", validateAccessToken, Controller.createCase);
 router.get("/", validateAccessToken, Controller.findAllCases);
 router.get("/:id", validateAccessToken, Controller.findCase);
-router.post("/:id/upload/", upload.array("files"), Controller.uploadFiles)
+router.post("/:id/files/upload/", upload.array("files"), validateAccessToken, Controller.uploadFiles)
+router.get("/:id/files/:fileId", validateAccessToken, Controller.findFile);
+router.put("/:id", validateAccessToken, Controller.updateCase);
 
 export default router;

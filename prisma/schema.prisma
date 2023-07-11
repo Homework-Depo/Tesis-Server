@@ -99,6 +99,7 @@ model OfficeBranch {
 model File {
   id        Int      @id @default(autoincrement())
   name      String
+  key       String
   extension String
   // who are you? 
   path      String

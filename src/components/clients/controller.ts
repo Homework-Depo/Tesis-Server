@@ -113,18 +113,25 @@ export const findOneClient = async (req: Request, res: Response) => {
           }
         }
       },
-      select: {
-        status: true,
-        name: true,
-        lastName: true,
-        dni: true,
-        phone: true,
-        email: true,
+      include: {
         cases: {
           where: {
             users: {
               some: {
                 id: Number(userId)
+              }
+            }
+          },
+          select: {
+            id: true,
+            lawBranch: true,
+            lawMatter: true,
+            status: true,
+            users: {
+              select: {
+                id: true,
+                name: true,
+                lastName: true
               }
             }
           }
@@ -138,7 +145,7 @@ export const findOneClient = async (req: Request, res: Response) => {
         message: "Cliente no encontrado"
       });
     }
-    
+
     return res.status(200).json({
       success: true,
       data: client

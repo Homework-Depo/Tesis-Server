@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { Case, Client, File } from "@prisma/client";
 import prisma from '../../utils/Database';
-import { uploadFile, deleteFile } from "../../utils/AWS";
-import { PutObjectCommandOutput } from '@aws-sdk/client-s3';
+import * as aws from "../../utils/AWS";
+import { GetObjectCommandOutput, GetObjectOutput, PutObjectCommandOutput } from '@aws-sdk/client-s3';
 import path from 'path';
 
 export const findClient = async (req: Request, res: Response) => {
@@ -238,6 +238,7 @@ export const findCase = async (req: Request, res: Response) => {
         }
       },
       include: {
+        files: true,
         users: {
           select: {
             id: true,
@@ -293,6 +294,91 @@ export const findCase = async (req: Request, res: Response) => {
   }
 }
 
+export const updateCase = async (req: Request, res: Response) => {
+  const caseId = req.params.id;
+  const {
+    title,
+    description,
+    lawBranch,
+    lawMatter,
+    code,
+    court,
+    officer,
+    judge,
+    hasJudicialFile
+  } = req.body;
+
+  if (!title || !lawBranch || !lawMatter) {
+    return res.status(400).json({
+      success: false,
+      message: "Datos incompletos."
+    });
+  }
+
+  try {
+    if (!hasJudicialFile) {
+      await prisma.case.update({
+        where: {
+          id: Number(caseId)
+        },
+        data: {
+          title: title,
+          description: description || "",
+          lawBranch: {
+            connect: {
+              id: Number(lawBranch)
+            }
+          },
+          lawMatter: {
+            connect: {
+              id: Number(lawMatter)
+            }
+          }
+        }
+      });
+    } else {
+      await prisma.case.update({
+        where: {
+          id: Number(caseId)
+        },
+        data: {
+          title: title,
+          description: description,
+          lawBranch: {
+            connect: {
+              id: Number(lawBranch)
+            }
+          },
+          lawMatter: {
+            connect: {
+              id: Number(lawMatter)
+            }
+          },
+          courtFile: {
+            update: {
+              code: code,
+              court: court,
+              officer: officer,
+              judge: judge
+            }
+          }
+        }
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Caso actualizado exitosamente."
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Error interno del servidor."
+    });
+  }
+}
+
 export const uploadFiles = async (req: Request, res: Response) => {
   const { id } = req.body;
   const caseId = req.params.id;
@@ -300,7 +386,7 @@ export const uploadFiles = async (req: Request, res: Response) => {
   const files = req.files as Express.Multer.File[];
   const newFiles: File[] = [];
 
-  if (!files || !id || !caseId) {
+  if (!files || !caseId) {
     return res.status(400).json({
       success: false,
       message: "Datos incompletos."
@@ -332,12 +418,13 @@ export const uploadFiles = async (req: Request, res: Response) => {
         name: file.originalname,
         extension: file.mimetype,
         path: `${process.env.bucket}/${uniqueName}`,
+        key: uniqueName,
         size: file.size
       };
 
       newFiles.push(newFile as File);
 
-      const response: PutObjectCommandOutput = await uploadFile(file.buffer, uniqueName, file.mimetype);
+      const response: PutObjectCommandOutput = await aws.uploadFile(file.buffer, uniqueName, file.mimetype);
       if (!response.$metadata.httpStatusCode || response.$metadata.httpStatusCode !== 200) {
         throw new Error();
       }
@@ -359,9 +446,165 @@ export const uploadFiles = async (req: Request, res: Response) => {
       message: "Archivos subidos correctamente"
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       success: false,
       message: "Error interno del servidor."
     });
   }
 };
+
+export const findFile = async (req: Request, res: Response) => {
+  const { id } = req.body;
+  const caseId = req.params.id;
+  const fileId = req.params.fileId;
+
+  if (!id || !caseId || !fileId) {
+    return res.status(400).json({
+      success: false,
+      message: "Datos incompletos."
+    });
+  }
+
+  try {
+    const file = await prisma.file.findFirst({
+      where: {
+        id: Number(fileId),
+        caseId: Number(caseId),
+        case: {
+          users: {
+            some: {
+              id: Number(id)
+            }
+          }
+        }
+      }
+    });
+
+    console.log(file);
+
+    !file && res.status(404).json({
+      success: false,
+      message: "Archivo no encontrado."
+    });
+
+    const response = await aws.findFile(file?.key as string);
+    const stream = response.Body;
+
+    res.set({
+      'Content-Type': response.ContentType,
+      'Content-Length': response.ContentLength,
+      'Content-Disposition': `attachment; filename=${file?.name}`,
+    });
+
+    return stream.pipe(res).status(200);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Error interno del servidor."
+    });
+  }
+}
+
+// delete file by id
+export const deleteFile = async (req: Request, res: Response) => {
+  const { id } = req.body;
+  const caseId = req.params.id;
+  const fileId = req.params.fileId;
+
+  if (!id || !caseId || !fileId) {
+    return res.status(400).json({
+      success: false,
+      message: "Datos incompletos."
+    });
+  }
+
+  try {
+    const file = await prisma.file.findFirst({
+      where: {
+        id: Number(fileId),
+        caseId: Number(caseId),
+        case: {
+          users: {
+            some: {
+              id: Number(id)
+            }
+          }
+        }
+      }
+    });
+
+    !file && res.status(404).json({
+      success: false,
+      message: "Archivo no encontrado."
+    });
+
+    const response = await aws.deleteFile(file?.key as string);
+    if (!response.$metadata.httpStatusCode || response.$metadata.httpStatusCode !== 204) {
+      throw new Error();
+    }
+
+    await prisma.file.delete({
+      where: {
+        id: Number(fileId)
+      }
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Archivo eliminado correctamente."
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Error interno del servidor."
+    });
+  }
+}
+
+export const findCaseToUpdate = async (req: Request, res: Response) => {
+  const { id } = req.body;
+  const caseId = req.params.id;
+
+  if (!id || !caseId) {
+    return res.status(400).json({
+      success: false,
+      message: "Datos incompletos."
+    });
+  }
+
+  try {
+    const caseFound = await prisma.case.findFirst({
+      where: {
+        id: Number(caseId),
+        users: {
+          some: {
+            id: Number(id)
+          }
+        }
+      }
+    });
+
+    if (!caseFound) {
+      return res.status(404).json({
+        success: false,
+        message: "Caso no encontrado."
+      });
+    }
+
+    const lawMatters = await prisma.lawMatter.findMany({});
+
+    res.status(200).json({
+      success: true,
+      data: [caseFound, lawMatters]
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Error interno del servidor."
+    });
+  }
+}
