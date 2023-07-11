@@ -139,6 +139,8 @@ export const findOneClient = async (req: Request, res: Response) => {
       }
     });
 
+    console.log(client);
+
     if (!client) {
       return res.status(404).json({
         success: false,
@@ -160,10 +162,10 @@ export const findOneClient = async (req: Request, res: Response) => {
 }
 
 export const updateClient = async (req: Request, res: Response) => {
-  const { id, name, status, lastName, dni, email, phone } = req.body;
-  console.log(id, name, status, lastName, dni, email, phone);
+  const { clientId, name, status, lastName, dni, email, phone } = req.body;
 
-  if (!name || !status || !lastName || !dni || !email || !phone) {
+
+  if (!clientId || !name || status === "undefined" || !lastName || !dni || !email || !phone) {
     return res.status(400).json({
       success: false,
       message: 'Datos incompletos'
@@ -173,16 +175,21 @@ export const updateClient = async (req: Request, res: Response) => {
   try {
     await prisma.client.update({
       where: {
-        id: Number(id)
+        id: Number(clientId)
       },
       data: {
         name,
-        status,
+        status: status,
         lastName,
         dni,
         email,
         phone,
       }
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Cliente actualizado correctamente',
     });
   } catch (error) {
     console.log(error);
@@ -191,9 +198,4 @@ export const updateClient = async (req: Request, res: Response) => {
       message: 'Error al actualizar el cliente'
     });
   }
-
-  return res.status(200).json({
-    success: true,
-    message: 'Cliente actualizado correctamente',
-  });
 }

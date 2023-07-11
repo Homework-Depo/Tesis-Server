@@ -4,6 +4,7 @@ import prisma from '../../utils/Database';
 import * as aws from "../../utils/AWS";
 import { GetObjectCommandOutput, GetObjectOutput, PutObjectCommandOutput } from '@aws-sdk/client-s3';
 import path from 'path';
+import { generateSignedUrl } from '../../utils/AWS';
 
 export const findClient = async (req: Request, res: Response) => {
   const { clientId } = req.query;
@@ -277,6 +278,17 @@ export const findCase = async (req: Request, res: Response) => {
       }
     });
 
+    if (!client) {
+      return res.status(404).json({
+        success: false,
+        message: "Caso no encontrado."
+      });
+    }
+
+    for (let i = 0; i < client.files.length; i++) {
+      client.files[i].signedUrl = await generateSignedUrl(client.files[i].key);
+    }
+
     !client && res.status(404).json({
       success: false,
       message: "Caso no encontrado."
@@ -412,12 +424,12 @@ export const uploadFiles = async (req: Request, res: Response) => {
 
     for (const file of files) {
       const ext = path.extname(file.originalname);
-      const uniqueName = `${caseFound?.id}-${caseFound?.clientId}-file-${Date.now()}${ext}`;
+      const uniqueName = `${caseFound?.id} -${caseFound?.clientId} -file - ${Date.now()}${ext} `;
 
       const newFile = {
         name: file.originalname,
         extension: file.mimetype,
-        path: `${process.env.bucket}/${uniqueName}`,
+        path: `${process.env.bucket} /${uniqueName}`,
         key: uniqueName,
         size: file.size
       };

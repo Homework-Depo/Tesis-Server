@@ -63,8 +63,8 @@ async function main() {
 
   const client3 = await prisma.client.create({
     data: {
-      name: "Maria Alejandra",
-      lastName: "Aguero Paredes",
+      name: "Beatriz Lucero",
+      lastName: "Quintana Paredes",
       email: "maria.paredes@gmail.com",
       dni: "75601815",
       phone: "934120369",
@@ -75,6 +75,155 @@ async function main() {
           { id: user.id }
         ],
         //
+      }
+    }
+  });
+
+  const client4 = await prisma.client.create({
+    data: {
+      name: "María Alejandra",
+      lastName: "Aguero Paredes",
+      email: "maria.paredes@gmail.com",
+      dni: "75601815",
+      phone: "934120369",
+      status: true,
+      users: {
+        // Conectar con varios usuarios a la vez
+        connect: [
+          { id: user.id }
+        ],
+      }
+    }
+  });
+
+  const client5 = await prisma.client.create({
+    data: {
+      name: "Juan Carlos",
+      lastName: "González López",
+      email: "juancarlos.gonzalez@gmail.com",
+      dni: "95182736",
+      phone: "934564872",
+      status: true,
+      users: {
+        connect: [
+          { id: user.id }
+        ],
+      }
+    }
+  });
+
+  const client6 = await prisma.client.create({
+    data: {
+      name: "María Isabel",
+      lastName: "Sánchez García",
+      email: "mariaisabel.sanchez@gmail.com",
+      dni: "43217568",
+      phone: "934890216",
+      status: true,
+      users: {
+        connect: [
+          { id: user.id }
+        ],
+      }
+    }
+  });
+
+  // Continuar creando los clientes restantes de la misma manera
+
+  const client7 = await prisma.client.create({
+    data: {
+      name: "Carlos Eduardo",
+      lastName: "Hernández Fernández",
+      email: "carloseduardo.hernandez@gmail.com",
+      dni: "51247693",
+      phone: "934123456",
+      status: true,
+      users: {
+        connect: [
+          { id: user.id }
+        ],
+      }
+    }
+  });
+
+  const client8 = await prisma.client.create({
+    data: {
+      name: "Ana María",
+      lastName: "López Pérez",
+      email: "anamaria.lopez@gmail.com",
+      dni: "12345678",
+      phone: "934567890",
+      status: true,
+      users: {
+        connect: [
+          { id: user.id }
+        ],
+      }
+    }
+  });
+
+  const client9 = await prisma.client.create({
+    data: {
+      name: "Carlos Manuel",
+      lastName: "Gómez Martínez",
+      email: "carlos.gomez@gmail.com",
+      dni: "87654321",
+      phone: "934567891",
+      status: true,
+      users: {
+        connect: [
+          { id: user.id }
+        ],
+      }
+    }
+  });
+  
+  const client10 = await prisma.client.create({
+    data: {
+      name: "Laura Beatriz",
+      lastName: "Rodríguez Sánchez",
+      email: "laura.rodriguez@gmail.com",
+      dni: "24681357",
+      phone: "934567892",
+      status: false,
+      users: {
+        connect: [
+          { id: user.id }
+        ],
+      }
+    }
+  });
+  
+  // Continuar creando los clientes restantes de la misma manera
+  
+  const client11 = await prisma.client.create({
+    data: {
+      name: "Javier Alejandro",
+      lastName: "Hernández Ramírez",
+      email: "javier.hernandez@gmail.com",
+      dni: "98765432",
+      phone: "934567893",
+      status: true,
+      users: {
+        connect: [
+          { id: user.id }
+        ],
+      }
+    }
+  });
+  
+  const client12 = await prisma.client.create({
+    data: {
+      name: "María José",
+      lastName: "López Pérez",
+      email: "mariajose.lopez@gmail.com",
+      dni: "56789123",
+      phone: "934567894",
+      status: false,
+      users: {
+        connect: [
+          { id: user.id }
+        ],
       }
     }
   });
