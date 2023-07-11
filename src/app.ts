@@ -12,7 +12,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser())
 app.use(morgan('dev'));
 app.use(cors({
-  origin: `${frontendUrl}`,
+  origin: [
+    "http://localhost",
+    "http://localhost:5173",
+  ],
   credentials: true
 }));
 
