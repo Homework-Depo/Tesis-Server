@@ -177,7 +177,7 @@ async function main() {
       }
     }
   });
-  
+
   const client10 = await prisma.client.create({
     data: {
       name: "Laura Beatriz",
@@ -193,9 +193,9 @@ async function main() {
       }
     }
   });
-  
+
   // Continuar creando los clientes restantes de la misma manera
-  
+
   const client11 = await prisma.client.create({
     data: {
       name: "Javier Alejandro",
@@ -211,7 +211,7 @@ async function main() {
       }
     }
   });
-  
+
   const client12 = await prisma.client.create({
     data: {
       name: "María José",
@@ -322,6 +322,99 @@ async function main() {
     }
   });
 
+  const civilMatter6 = await prisma.lawMatter.create({
+    data: {
+      name: "Divorcio",
+      lawBranch: {
+        connect: {
+          id: civilBranch.id
+        }
+      }
+    }
+  });
+
+  const civilMatter7 = await prisma.lawMatter.create({
+    data: {
+      name: "Contrato de Arrendamiento",
+      lawBranch: {
+        connect: {
+          id: civilBranch.id
+        }
+      }
+    }
+  });
+
+  const civilMatter8 = await prisma.lawMatter.create({
+    data: {
+      name: "Responsabilidad Civil",
+      lawBranch: {
+        connect: {
+          id: civilBranch.id
+        }
+      }
+    }
+  });
+
+  const civilMatter9 = await prisma.lawMatter.create({
+    data: {
+      name: "Accidentes de Tráfico",
+      lawBranch: {
+        connect: {
+          id: civilBranch.id
+        }
+      }
+    }
+  });
+
+  const civilMatter10 = await prisma.lawMatter.create({
+    data: {
+      name: "Herencia y Sucesiones",
+      lawBranch: {
+        connect: {
+          id: civilBranch.id
+        }
+      }
+    }
+  });
+
+  // Continuar creando más asuntos civiles de la misma manera
+
+  const civilMatter11 = await prisma.lawMatter.create({
+    data: {
+      name: "Incumplimiento de Contrato",
+      lawBranch: {
+        connect: {
+          id: civilBranch.id
+        }
+      }
+    }
+  });
+
+  const civilMatter12 = await prisma.lawMatter.create({
+    data: {
+      name: "Responsabilidad Extracontractual",
+      lawBranch: {
+        connect: {
+          id: civilBranch.id
+        }
+      }
+    }
+  });
+
+  // Continuar creando más asuntos civiles de la misma manera
+
+  // Civil Matter 16 (último asunto civil)
+  const civilMatter16 = await prisma.lawMatter.create({
+    data: {
+      name: "Reclamación de Daños y Perjuicios",
+      lawBranch: {
+        connect: {
+          id: civilBranch.id
+        }
+      }
+    }
+  });
+
   // Law Matter - Civil - End
 
   // Law Matter - Penal - Start
@@ -380,6 +473,98 @@ async function main() {
     }
   });
 
+  const penalMatter6 = await prisma.lawMatter.create({
+    data: {
+      name: "Lesiones Graves",
+      lawBranch: {
+        connect: {
+          id: penalBrach.id
+        }
+      }
+    }
+  });
+
+  const penalMatter7 = await prisma.lawMatter.create({
+    data: {
+      name: "Robo",
+      lawBranch: {
+        connect: {
+          id: penalBrach.id
+        }
+      }
+    }
+  });
+
+  const penalMatter8 = await prisma.lawMatter.create({
+    data: {
+      name: "Secuestro",
+      lawBranch: {
+        connect: {
+          id: penalBrach.id
+        }
+      }
+    }
+  });
+
+  const penalMatter9 = await prisma.lawMatter.create({
+    data: {
+      name: "Falsificación de Documentos",
+      lawBranch: {
+        connect: {
+          id: penalBrach.id
+        }
+      }
+    }
+  });
+
+  const penalMatter10 = await prisma.lawMatter.create({
+    data: {
+      name: "Terrorismo",
+      lawBranch: {
+        connect: {
+          id: penalBrach.id
+        }
+      }
+    }
+  });
+
+  // Continuar creando más asuntos penales de la misma manera
+
+  const penalMatter11 = await prisma.lawMatter.create({
+    data: {
+      name: "Amenazas",
+      lawBranch: {
+        connect: {
+          id: penalBrach.id
+        }
+      }
+    }
+  });
+
+  const penalMatter12 = await prisma.lawMatter.create({
+    data: {
+      name: "Violencia de Género",
+      lawBranch: {
+        connect: {
+          id: penalBrach.id
+        }
+      }
+    }
+  });
+
+  // Continuar creando más asuntos penales de la misma manera
+
+  // Penal Matter 16 (último asunto penal)
+  const penalMatter16 = await prisma.lawMatter.create({
+    data: {
+      name: "Delitos Informáticos",
+      lawBranch: {
+        connect: {
+          id: penalBrach.id
+        }
+      }
+    }
+  });
   // Law Matter - Penal - End
 
   console.log({ user });
